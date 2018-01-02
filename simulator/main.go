@@ -43,8 +43,6 @@ func main() {
 	h.Set(gateway.XServicePath, "LoginServer")
 	h.Set(gateway.XServiceMethod, "Login")
 
-	log.Println(h.Get("X-RPCX-ServicePath"))
-
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal("failed to call: ", err)
