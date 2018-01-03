@@ -2,13 +2,12 @@ package gateserver
 
 import (
 	"context"
-	"log"
+	"../../log"
 	"net"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
-	"../../common"
 	"github.com/julienschmidt/httprouter"
 	"github.com/smallnest/rpcx/client"
 	"golang.org/x/net/http2"
@@ -26,7 +25,8 @@ type Gateway struct {
 	BasePath       	string
 	// http listen address
 	Addr       		string
-	ZookeeperAddr 	string
+	ZookeeperAddr 	[]string
+	ServerToken		string
 	ServerType ServerType
 
 	serviceDiscovery client.ServiceDiscovery
@@ -38,12 +38,12 @@ type Gateway struct {
 	xclients map[string]client.XClient
 }
 
-func NewGateway(basePath string,addr string, zoaddr string,st ServerType, failMode client.FailMode, selectMode client.SelectMode, option client.Option) *Gateway {
-
+func NewGateway(basePath string,token string,addr string, zkAddr []string,st ServerType, failMode client.FailMode, selectMode client.SelectMode, option client.Option) *Gateway {
 	return &Gateway{
 		BasePath:		  basePath,
 		Addr:             addr,
-		ZookeeperAddr:	  zoaddr,
+		ZookeeperAddr:	  zkAddr,
+		ServerToken:	  token,
 		ServerType:       st,
 		FailMode:         failMode,
 		SelectMode:       selectMode,
@@ -70,7 +70,7 @@ func (g *Gateway) Serve() {
 
 func (g *Gateway) startHttp1(handler http.Handler) {
 	if err := http.ListenAndServe(g.Addr, handler); err != nil {
-		log.Fatalf("error in ListenAndServe: %s", err)
+		log.Log(log.Fatel,"error in ListenAndServe: %s", err)
 	}
 }
 
@@ -88,11 +88,11 @@ func (g *Gateway) startH2c(handler http.Handler) {
 	http2.ConfigureServer(server, s2)
 	l, _ := net.Listen("tcp", g.Addr)
 	defer l.Close()
-	log.Println("Start server...")
+	log.Log(log.Info,"Start server...")
 	for {
 		rwc, err := l.Accept()
 		if err != nil {
-			log.Println("accept err:", err)
+			log.Log(log.Error,"accept err:", err)
 			continue
 		}
 		go s2.ServeConn(rwc, &http2.ServeConnOpts{BaseConfig: server})
@@ -112,7 +112,7 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 	servicePath := r.Header.Get(XServicePath)
 
 	wh := w.Header()
-	req, err := HttpRequest2RpcxRequest(r,common.ServerToken)
+	req, err := HttpRequest2RpcxRequest(r,g.ServerToken)
 	if err != nil {
 		rh := r.Header
 		for k, v := range rh {
@@ -129,7 +129,7 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 	var xc client.XClient
 	g.mu.Lock()
 	if g.xclients[servicePath] == nil {
-		zd := client.NewZookeeperDiscovery(g.BasePath, servicePath, []string{g.ZookeeperAddr}, nil)
+		zd := client.NewZookeeperDiscovery(g.BasePath, servicePath, g.ZookeeperAddr, nil)
 		g.xclients[servicePath] = client.NewXClient(servicePath, g.FailMode, g.SelectMode,zd, g.Option)
 	}
 	xc = g.xclients[servicePath]

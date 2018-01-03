@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+
+    <basePath>/cloudmusic</basePath> 
+
+    <server_token>servertoken</server_token>
+
+    <zookeeper>
+        <zookeeper_node>
+            <ip>127.0.0.1:2181</ip>
+        </zookeeper_node>
+    </zookeeper>
+
+    <gatt_server>
+        <ip>127.0.0.1:8701</ip>
+    </gatt_server>
+
+    <servers>
+        <server>
+            <name>LoginServer</name>
+            <ip>127.0.0.1:8801</ip>
+        </server>
+        <server>
+            <name>DataServer</name>
+            <ip>127.0.0.1:8802</ip>
+        </server>
+    </servers>
+
+</config>

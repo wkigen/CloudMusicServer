@@ -20,7 +20,6 @@ var levelString = [...]string{
 	"[FATAL]",
 }
 
-
 func Log(level int, format string, v ...interface{}){
 	var text string
 	if format == "" {
