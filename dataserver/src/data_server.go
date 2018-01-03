@@ -3,6 +3,7 @@ package dataserver
 import (
 	"flag"
 	"../../server"
+	"../../log"
 )
 
 var (
@@ -13,9 +14,14 @@ type IDataServer struct {
 	iserver.IServer
 }
 
+func (self *IDataServer) Init(){
+	log.Log(log.Debug,"IDataServerIDataServer")
+}
+
 func Start(){
 	flag.Parse()
 
 	s := IDataServer{}
+	s.Init()
 	s.Start("DataServer",new(DataServer),*addr)
 }

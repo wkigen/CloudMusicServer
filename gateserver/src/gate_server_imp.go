@@ -23,8 +23,10 @@ const (
 )
 
 type Gateway struct {
+	BasePath       	string
 	// http listen address
-	Addr       string
+	Addr       		string
+	ZookeeperAddr 	string
 	ServerType ServerType
 
 	serviceDiscovery client.ServiceDiscovery
@@ -36,12 +38,13 @@ type Gateway struct {
 	xclients map[string]client.XClient
 }
 
-func NewGateway(addr string, st ServerType, sd client.ServiceDiscovery, failMode client.FailMode, selectMode client.SelectMode, option client.Option) *Gateway {
+func NewGateway(basePath string,addr string, zoaddr string,st ServerType, failMode client.FailMode, selectMode client.SelectMode, option client.Option) *Gateway {
 
 	return &Gateway{
+		BasePath:		  basePath,
 		Addr:             addr,
+		ZookeeperAddr:	  zoaddr,
 		ServerType:       st,
-		serviceDiscovery: sd,
 		FailMode:         failMode,
 		SelectMode:       selectMode,
 		Option:           option,
@@ -126,8 +129,8 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 	var xc client.XClient
 	g.mu.Lock()
 	if g.xclients[servicePath] == nil {
-		g.xclients[servicePath] = client.NewXClient(servicePath, g.FailMode, g.SelectMode, g.serviceDiscovery.Clone(servicePath), g.Option)
-		//g.xclients[servicePath].Auth(common.ServerToken)
+		zd := client.NewZookeeperDiscovery(g.BasePath, servicePath, []string{g.ZookeeperAddr}, nil)
+		g.xclients[servicePath] = client.NewXClient(servicePath, g.FailMode, g.SelectMode,zd, g.Option)
 	}
 	xc = g.xclients[servicePath]
 
