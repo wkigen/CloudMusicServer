@@ -5,8 +5,6 @@ import (
 	"../../log"
 )
 
-type LoginServer int
-
 type LoginArgs struct{
 	Name string
 	Passwrod string

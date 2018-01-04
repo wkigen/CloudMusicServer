@@ -2,14 +2,25 @@ package loginserver
 
 
 import (
+	"../../log"
 	"../../server"
 )
 
-type ILoginServer struct {
+type ServerEntity struct {
 	iserver.IServer
 }
 
+type LoginServer struct{
+
+}
+
 func Start(){
-	s := ILoginServer{}
-	s.Start("LoginServer",new(LoginServer))
+	loginServer := LoginServer{}
+	entity := ServerEntity{}
+	err := entity.Init()
+	if(err != nil){
+		log.Log(log.Fatel,"%s",err)
+		return
+	}
+	entity.Start("LoginServer",&loginServer)
 }

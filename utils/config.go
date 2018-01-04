@@ -13,7 +13,8 @@ type Config struct{
     BasePath        string   `xml:"basePath"`
     ServerToken     string   `xml:"server_token"`
     Zookeeper       ZookeeperConfig `xml:"zookeeper"`
-    GateServer      GateServerConfig `xml:"gatt_server"`
+    GateServer      GateServerConfig `xml:"gate_server"`
+    DataBase        DataBaseConfig `xml:"database"`
     Servers         ServersConfig `xml:"servers"`
 }
 
@@ -28,8 +29,17 @@ type ZookeeperNodeConfig struct{
 }
 
 type GateServerConfig struct{
-    XMLName     xml.Name `xml:"gatt_server"`
+    XMLName     xml.Name `xml:"gate_server"`
     Ip        string `xml:"ip"`
+}
+
+type DataBaseConfig struct{
+    DataBase    xml.Name `xml:"database"`
+    Type        string `xml:"type"`
+    Name        string `xml:"name"`
+    Accout      string `xml:"accout"`
+    Password    string `xml:"passowrd"`
+    Ip          string `xml:"ip"`
 }
 
 type ServersConfig struct{

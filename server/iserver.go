@@ -41,26 +41,23 @@ func addRegistryPlugin(s *server.Server,basePath string,addr string,zkAddr []str
 	s.Plugins.Add(zookeeperPlugin)
 }
 
-func (self *IServer) Init(){
-
-}
-
 func (self *IServer)ConnectDataServer(){
 
 }
 
-func (self *IServer) Start(name string,rcvr interface{}) {
-
+func (self *IServer) Init() error{
 	var err error
 	self.Config,err = utils.ReadConfig()
+	return err
+}
 
-	if(err == nil){
-		zkAddr := self.Config.GetZookeeperIp()
-		addr := self.Config.GetServerIp(name)
-		s := server.NewServer()
-		addRegistryPlugin(s,self.Config.BasePath, addr,zkAddr)
-		s.RegisterName(name, rcvr, "")
-		s.AuthFunc = self.auth
-		s.Serve("tcp", addr)
-	}
+func (self *IServer) Start(name string,rcvr interface{}) {
+
+	zkAddr := self.Config.GetZookeeperIp()
+	addr := self.Config.GetServerIp(name)
+	s := server.NewServer()
+	addRegistryPlugin(s,self.Config.BasePath, addr,zkAddr)
+	s.RegisterName(name, rcvr, "")
+	s.AuthFunc = self.auth
+	s.Serve("tcp", addr)
 } 

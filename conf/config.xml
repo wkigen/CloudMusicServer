@@ -12,9 +12,17 @@
         </zookeeper_node>
     </zookeeper>
 
-    <gatt_server>
+    <gate_server>
         <ip>127.0.0.1:8701</ip>
-    </gatt_server>
+    </gate_server>
+
+    <database>
+        <type>mysql</type>
+        <accout>root</accout>
+        <passowrd>123456</passowrd>
+        <name>cloud_music</name>
+        <ip>127.0.0.1:3306</ip>
+    </database>
 
     <servers>
         <server>
