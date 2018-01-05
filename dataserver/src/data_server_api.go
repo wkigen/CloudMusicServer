@@ -2,8 +2,10 @@ package dataserver
 
 import (
 	"../../log"
+	"../../utils"
+	"errors"
 	"context"
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 //--------------RegisterUser------------//
@@ -19,33 +21,56 @@ type RegisterUserReply struct {
 
 func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs, reply *RegisterUserReply) error {
 	accout := args.Accout
-	password := args.Password
-	log.Log(log.Debug,RegisterUser)
-	if(accout != "" && password != ""){
-		stmt, err :=self.DataBase.Prepare("INSERT INTO user VALUES (?,?,?,?)")
-		defer stmt.Close()
-		if err == nil {
-			stmt.Exec(0,accout,accout,password)
-			reply.Status = 0
-			return nil
+
+	qArgs := QueryUserArgs{}
+	qArgs.Accout = accout
+	qReply := QueryUserReply{}
+	err := self.QueryUser(ctx,&qArgs,&qReply)
+
+	if(err == nil && qReply.Id == -1){
+		password := utils.MD5([]byte(args.Password+self.Salt))
+		if(accout != "" && password != ""){
+			stmt, err := self.DataBase.Prepare("INSERT INTO user VALUES (?,?,?,?)")
+			defer stmt.Close()
+			if( err == nil ){
+				res,err := stmt.Exec(0,accout,accout,password)
+				if(err == nil){
+					reply.Status = 0
+					log.Log(log.Debug,"user registration success, %d",res.LastInsertId)
+					return nil
+				}
+			}
 		}
+	}else{
+		err = errors.New( "has same accout in db")
 	}
+	
+	log.Log(log.Debug,"user registration fail sql error ,%s",err)
 	reply.Status = 1
-    return nil
+    return err
 }
 
 
 //--------------QueryUser------------//
 
 type QueryUserArgs struct {
-
+	Accout string
 }
 
 type QueryUserReply struct {
-
+	Id			int32
+	Accout 		string
+	NickName 	string
+	Password	string
 }
 
 func (self *DataServer) QueryUser(ctx context.Context, args *QueryUserArgs, reply *QueryUserReply) error {
-
-    return nil
+	reply.Id = -1
+	rows := self.DataBase.QueryRow("SELECT * FROM user WHERE 'account'=?",args.Accout)
+	err := rows.Scan(&reply.Id, &reply.Accout, &reply.NickName, &reply.Password)
+	log.Log(log.Debug,"%d %s %s %s",reply.Id, reply.Accout, reply.NickName, reply.Password)
+	if(err == nil){
+		return nil
+	}
+    return err
 }

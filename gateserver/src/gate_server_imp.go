@@ -129,7 +129,7 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 	var xc client.XClient
 	g.mu.Lock()
 	if g.xclients[servicePath] == nil {
-		zd := client.NewZookeeperDiscovery(g.BasePath, servicePath, g.ZookeeperAddr, nil)
+		zd := client.NewZookeeperDiscovery("/"+g.BasePath, servicePath, g.ZookeeperAddr, nil)
 		g.xclients[servicePath] = client.NewXClient(servicePath, g.FailMode, g.SelectMode,zd, g.Option)
 	}
 	xc = g.xclients[servicePath]

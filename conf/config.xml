@@ -2,7 +2,7 @@
 
 <config>
 
-    <basePath>/cloudmusic</basePath> 
+    <basePath>cloudmusic</basePath> 
 
     <server_token>servertoken</server_token>
 

@@ -29,7 +29,7 @@ func addRegistryPlugin(s *server.Server,basePath string,addr string,zkAddr []str
 	zookeeperPlugin := &serverplugin.ZooKeeperRegisterPlugin{
 		ServiceAddress: "tcp@" + addr,
 		ZooKeeperServers: zkAddr,
-		BasePath: basePath,
+		BasePath: "/"+basePath,
 		Metrics: metrics.NewRegistry(),
 		UpdateInterval: time.Minute,
 	} 

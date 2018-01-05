@@ -33,7 +33,7 @@ func Register(){
 	cc := &codec.MsgpackCodec{}
 
 	args := &RegisterUserArgs{
-		Accout: "dfdfsdf",
+		Accout: "woshishui001",
 		Password:"123456",
 	}
 
