@@ -6,6 +6,7 @@ import (
 	"time"
 	"../log"
 	"../utils"
+	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/server"
 	"github.com/smallnest/rpcx/protocol"
 	"github.com/smallnest/rpcx/serverplugin"
@@ -13,7 +14,8 @@ import (
 )
 
 type IServer struct{
-	Config utils.Config
+	Config 				utils.Config
+	DataServerClinet 	client.XClient
 }
 
 func (self *IServer)auth(ctx context.Context, req *protocol.Message, token string) error {
@@ -41,8 +43,12 @@ func addRegistryPlugin(s *server.Server,basePath string,addr string,zkAddr []str
 	s.Plugins.Add(zookeeperPlugin)
 }
 
-func (self *IServer)ConnectDataServer(){
-
+func (self *IServer)ConnectDataServer() client.XClient{
+	zkAddr := self.Config.GetZookeeperIp()
+	zd := client.NewZookeeperDiscovery("/"+self.Config.BasePath, "DataServer", zkAddr, nil)
+	self.DataServerClinet = client.NewXClient("DataServer", client.Failtry, client.RandomSelect,zd, client.DefaultOption)
+	self.DataServerClinet.Auth(self.Config.ServerToken)
+	return self.DataServerClinet
 }
 
 func (self *IServer) Init() error{
