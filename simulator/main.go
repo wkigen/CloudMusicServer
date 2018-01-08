@@ -12,12 +12,17 @@ import (
 )
 
 type LoginArgs struct{
-	Name string
+	Accout string
 	Passwrod string
 }
 
 type LoginReply struct{
-	Token string
+	Code int
+	Msg string
+	Id			int32
+	Accout 		string
+	NickName 	string
+	Token 		string
 }
 
 type RegisterUserArgs struct {
@@ -26,7 +31,8 @@ type RegisterUserArgs struct {
 }
 
 type RegisterUserReply struct {
-	Status int
+	Code int
+	Msg string
 }
 
 func Register(){
@@ -49,7 +55,7 @@ func Register(){
 	h.Set(gateway.XMessageID, "10000")
 	h.Set(gateway.XMessageType, "0")
 	h.Set(gateway.XSerializeType, "3")
-	h.Set(gateway.XServicePath, "DataServer")
+	h.Set(gateway.XServicePath, "LoginServer")
 	h.Set(gateway.XServiceMethod, "RegisterUser")
 
 	res, err := http.DefaultClient.Do(req)
@@ -70,7 +76,7 @@ func Register(){
 		log.Fatal("failed to decode reply: ", err)
 	}
 
-	log.Printf("%s , %s ,%s", args.Accout, args.Password, reply.Status)
+	log.Printf("%s , %s ,%s", args.Accout, args.Password, reply.Code)
 }
 
 func Login(){
@@ -78,7 +84,7 @@ func Login(){
 	cc := &codec.MsgpackCodec{}
 
 	args := &LoginArgs{
-		Name: "10",
+		Accout: "10",
 		Passwrod:"20",
 	}
 
@@ -115,50 +121,12 @@ func Login(){
 		log.Fatal("failed to decode reply: ", err)
 	}
 
-	log.Printf("%s , %s ,%s", args.Name, args.Passwrod, reply.Token)
+	log.Printf("%s , %s ,%s,%s", args.Accout, args.Passwrod, reply.Token,reply.Msg)
 }
 
 func main() {
-	cc := &codec.MsgpackCodec{}
+	
+	//Login()
 
-	args := &RegisterUserArgs{
-		Accout: "dfdfsdf001",
-		Password:"123456",
-	}
-
-	data, _ := cc.Encode(args)
-	b := bytes.NewReader(data)
-	req, err := http.NewRequest("POST", "http://127.0.0.1:8701/",b )
-	if err != nil {
-		log.Fatal("failed to create request: ", err)
-		return
-	}
-
-	h := req.Header
-	h.Set(gateway.XMessageID, "10000")
-	h.Set(gateway.XMessageType, "0")
-	h.Set(gateway.XSerializeType, "3")
-	h.Set(gateway.XServicePath, "DataServer")
-	h.Set(gateway.XServiceMethod, "RegisterUser")
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Fatal("failed to call: ", err)
-	}
-	defer res.Body.Close()
-
-	// handle http response
-	replyData, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Fatal("failed to read response: ", err)
-	}
-
-	reply := &RegisterUserReply{}
-	err = cc.Decode(replyData, reply)
-	if err != nil {
-		log.Fatal("failed to decode reply: ", err)
-	}
-
-	log.Printf("%s , %s ,%s", args.Accout, args.Password, reply.Status)
-
+	Register()
 }

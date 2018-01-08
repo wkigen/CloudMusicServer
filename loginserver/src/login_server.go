@@ -4,6 +4,7 @@ package loginserver
 import (
 	"../../log"
 	"../../server"
+	"github.com/smallnest/rpcx/client"
 )
 
 type ServerEntity struct {
@@ -11,7 +12,7 @@ type ServerEntity struct {
 }
 
 type LoginServer struct{
-
+	DataServerXC client.XClient
 }
 
 func Start(){
@@ -22,5 +23,6 @@ func Start(){
 		log.Log(log.Fatel,"%s",err)
 		return
 	}
+	loginServer.DataServerXC = entity.ConnectDataServer()
 	entity.Start("LoginServer",&loginServer)
 }
