@@ -3,12 +3,12 @@ package gateserver
 import (
 	"fmt"
 	"context"
-	"../../log"
 	"net"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+	"github.com/golang/glog"
 	"github.com/julienschmidt/httprouter"
 	"github.com/smallnest/rpcx/client"
 	"golang.org/x/net/http2"
@@ -71,7 +71,7 @@ func (g *Gateway) Serve() {
 
 func (g *Gateway) startHttp1(handler http.Handler) {
 	if err := http.ListenAndServe(g.Addr, handler); err != nil {
-		log.Log(log.Fatel,"error in ListenAndServe: %s", err)
+		glog.Fatal("error in ListenAndServe: %s", err)
 	}
 }
 
@@ -89,11 +89,11 @@ func (g *Gateway) startH2c(handler http.Handler) {
 	http2.ConfigureServer(server, s2)
 	l, _ := net.Listen("tcp", g.Addr)
 	defer l.Close()
-	log.Log(log.Info,"Start server...")
+	glog.Infoln("Start server...")
 	for {
 		rwc, err := l.Accept()
 		if err != nil {
-			log.Log(log.Error,"accept err:", err)
+			glog.Errorln("accept err:", err)
 			continue
 		}
 		go s2.ServeConn(rwc, &http2.ServeConnOpts{BaseConfig: server})
@@ -125,7 +125,7 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 
 	err := g.Interceptor(servicePath)
 	if(err != nil){
-		log.Log(log.Warn,err.Error())
+		glog.Warningln(err)
 		wh.Set(XMessageStatusType, "Error")
 		wh.Set(XErrorMessage, err.Error())
 		w.Write([] byte("error"))

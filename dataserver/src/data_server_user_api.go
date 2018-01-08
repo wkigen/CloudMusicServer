@@ -1,11 +1,10 @@
 package dataserver
 
 import (
-	"../../log"
 	"../../utils"
-	// "errors"
 	"context"
 	"../../server"
+	"github.com/golang/glog"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -39,7 +38,7 @@ func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs
 					if(err == nil){
 						reply.Code = 0
 						reply.Msg = "注册成功"
-						log.Log(log.Debug,"user registration success,(%s) %d",accout,res.LastInsertId)
+						glog.Infoln("user registration success,(%s) %d",accout,res.LastInsertId)
 						return nil
 					}
 				}
@@ -51,7 +50,7 @@ func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs
 	}else{
 		reply.Msg = "注册失败"
 	}
-	log.Log(log.Debug,"user registration fail， error :%s",err)
+	glog.Infoln("user registration fail， error :%s",err)
 	reply.Code = 1
     return err
 }
@@ -76,7 +75,7 @@ func (self *DataServer) QueryUser(ctx context.Context, args *QueryUserArgs, repl
 	err := rows.Scan(&reply.Id, &reply.Accout, &reply.NickName, &reply.Password)
 	
 	if(err == nil){
-		log.Log(log.Debug,"QueryUser %d %s %s %s",reply.Id, reply.Accout, reply.NickName, reply.Password)
+		glog.Infoln("QueryUser %d %s %s %s",reply.Id, reply.Accout, reply.NickName, reply.Password)
 		reply.Code = 0
 	}else{
 		reply.Code = 1
@@ -85,7 +84,7 @@ func (self *DataServer) QueryUser(ctx context.Context, args *QueryUserArgs, repl
 			reply.Msg = "找不到该用户"
 			err = nil
 		}
-		log.Log(log.Warn,"query user (%s) is error,%s",args.Accout,err)
+		glog.Infoln("query user (%s) is error,%s",args.Accout,err)
 	}
     return err
 }

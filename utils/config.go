@@ -5,7 +5,7 @@ import (
     "io/ioutil"
     "os"
     "errors"
-    "../log"
+    "github.com/golang/glog"
 )
 
 type Config struct{
@@ -77,20 +77,20 @@ func ReadConfig() (conf Config,err  error){
 
     file, err := os.Open("conf/config.xml")    
     if err != nil {
-        log.Log(log.Fatel,"can not read the config ,%s",err)
+        glog.Fatal("can not read the config ,%s",err)
         return config, errors.New("can not read the config")
     }
     defer file.Close()
     
     data, err := ioutil.ReadAll(file)
     if err != nil {
-        log.Log(log.Fatel,"can not read the config ,%s",err)
+        glog.Fatal("can not read the config ,%s",err)
         return config, errors.New("can not read the config")
     }
 
     err = xml.Unmarshal(data, &config)
     if err != nil {
-        log.Log(log.Fatel,"can not read the config ,%s",err)
+        glog.Fatal("can not read the config ,%s",err)
         return config, errors.New("can not read the config")
     }
 

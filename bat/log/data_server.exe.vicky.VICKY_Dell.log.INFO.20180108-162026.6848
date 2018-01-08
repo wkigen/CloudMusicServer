@@ -1,0 +1,7 @@
+Log file created at: 2018/01/08 16:20:26
+Running on machine: vicky
+Binary: Built with gc go1.9.2 for windows/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0108 16:20:26.705123    6848 iserver.go:23] Authentication Success
+I0108 16:20:26.708123    6848 data_server_user_api.go:78] QueryUser %d %s %s %s 6 woshishui001 woshishui001 052e4978e545c46ec1922b67893fb074
+I0108 16:20:26.708123    6848 data_server_user_api.go:53] user registration fail， error :%s <nil>

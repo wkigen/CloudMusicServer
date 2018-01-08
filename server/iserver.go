@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"time"
-	"../log"
 	"../utils"
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/server"
 	"github.com/smallnest/rpcx/protocol"
 	"github.com/smallnest/rpcx/serverplugin"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/golang/glog"
 )
 
 type IServer struct{
@@ -20,10 +20,10 @@ type IServer struct{
 
 func (self *IServer)auth(ctx context.Context, req *protocol.Message, token string) error {
 	if token == self.Config.ServerToken {
-		log.Log(log.Info,"Authentication Success")
+		glog.Infoln("Authentication Success")
 		return nil
 	}
-	log.Log(log.Info,"Authentication Fail")
+	glog.Infoln("Authentication Fail")
 	return errors.New("invalid token")
 }
 
@@ -38,7 +38,7 @@ func addRegistryPlugin(s *server.Server,basePath string,addr string,zkAddr []str
 	err := zookeeperPlugin.Start()
 
 	if err != nil {
-		log.Log(log.Fatel,"%s",err)
+		glog.Fatal("%s",err)
 	} 
 	s.Plugins.Add(zookeeperPlugin)
 }
@@ -67,3 +67,7 @@ func (self *IServer) Start(name string,rcvr interface{}) {
 	s.AuthFunc = self.auth
 	s.Serve("tcp", addr)
 } 
+
+func (self *IServer) Stop() {
+	glog.Flush()
+}

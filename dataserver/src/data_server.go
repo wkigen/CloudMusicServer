@@ -2,9 +2,9 @@ package dataserver
 
 import (
 	"../../server"
-	"../../log"
 	"fmt"
 	"database/sql"
+	"github.com/golang/glog"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -17,33 +17,41 @@ type DataServer struct{
 	Salt string
 }
 
-func Init(s *DataServer,entity ServerEntity) error{
+var g_Entity ServerEntity
+
+func Init(s *DataServer) error{
 
 	s.Salt = "cloudmusic"
 
 	var err error
-	databaseConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",entity.Config.DataBase.Accout,entity.Config.DataBase.Password,
-						entity.Config.DataBase.Ip,entity.Config.DataBase.Name)				
-	s.DataBase, err = sql.Open(entity.Config.DataBase.Type, databaseConf)
+	databaseConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",g_Entity.Config.DataBase.Accout,g_Entity.Config.DataBase.Password,
+						g_Entity.Config.DataBase.Ip,g_Entity.Config.DataBase.Name)				
+	s.DataBase, err = sql.Open(g_Entity.Config.DataBase.Type, databaseConf)
 	
 	return err
 }
 
+
+
 func Start(){
 	dataServer := DataServer{}
-	entity := ServerEntity{}
+	g_Entity = ServerEntity{}
 
-	err := entity.Init()
+	err := g_Entity.Init()
 	if(err != nil){
-		log.Log(log.Fatel,"%s",err)
+		glog.Fatal(err)
 		return
 	}
 
-	err = Init(&dataServer,entity)
+	err = Init(&dataServer)
 	if(err != nil){
-		log.Log(log.Fatel,"%s",err)
+		glog.Fatal(err)
 		return
 	}
 
-	entity.Start("DataServer",&dataServer)
+	g_Entity.Start("DataServer",&dataServer)
+}
+
+func Stop(){
+	g_Entity.Stop()
 }

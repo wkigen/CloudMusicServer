@@ -2,7 +2,7 @@ package loginserver
 
 import (
 	"context"
-	"../../log"
+	"github.com/golang/glog"
 	"../../server"
 	"../../dataserver/src"
 )
@@ -50,9 +50,9 @@ type LoginReply struct{
 }
 
 func (self *LoginServer) Login(ctx context.Context, args *LoginArgs, reply *LoginReply) error {
-	log.Log(log.Debug,"--------login--------")
-	log.Log(log.Debug,"user accout:"+args.Accout)
-	log.Log(log.Debug,"user password:"+args.Passwrod)
+	glog.Infoln("--------login--------")
+	glog.Infoln("user accout:"+args.Accout)
+	glog.Infoln("user password:"+args.Passwrod)
 
 	qArgs := &dataserver.QueryUserArgs{}
 	qReply := &dataserver.QueryUserReply{}
