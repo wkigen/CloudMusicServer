@@ -16,4 +16,5 @@
 debug
 
 bat/conf
+bat/log
 build
