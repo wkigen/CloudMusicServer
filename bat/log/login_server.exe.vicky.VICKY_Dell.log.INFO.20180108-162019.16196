@@ -1,6 +1,0 @@
-Log file created at: 2018/01/08 16:20:19
-Running on machine: vicky
-Binary: Built with gc go1.9.2 for windows/amd64
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-I0108 16:20:19.135690   16196 login_server.go:21] LoginServer is start
-I0108 16:20:26.704123   16196 iserver.go:23] Authentication Success
