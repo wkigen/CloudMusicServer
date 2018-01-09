@@ -14,19 +14,17 @@ type ServerEntity struct {
 
 type DataServer struct{
 	DataBase *sql.DB
-	Salt string
 }
 
 var g_Entity ServerEntity
+var g_DataServer DataServer
 
-func Init(s *DataServer) error{
-
-	s.Salt = "cloudmusic"
+func Init() error{
 
 	var err error
 	databaseConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",g_Entity.Config.DataBase.Accout,g_Entity.Config.DataBase.Password,
 						g_Entity.Config.DataBase.Ip,g_Entity.Config.DataBase.Name)				
-	s.DataBase, err = sql.Open(g_Entity.Config.DataBase.Type, databaseConf)
+	g_DataServer.DataBase, err = sql.Open(g_Entity.Config.DataBase.Type, databaseConf)
 	
 	return err
 }
@@ -34,7 +32,7 @@ func Init(s *DataServer) error{
 
 
 func Start(){
-	dataServer := DataServer{}
+	g_DataServer = DataServer{}
 	g_Entity = ServerEntity{}
 
 	err := g_Entity.Init()
@@ -43,15 +41,18 @@ func Start(){
 		return
 	}
 
-	err = Init(&dataServer)
+	err = Init()
 	if(err != nil){
 		glog.Fatal(err)
 		return
 	}
 
-	g_Entity.Start("DataServer",&dataServer)
+	g_Entity.Start("DataServer",&g_DataServer)
 }
 
 func Stop(){
 	g_Entity.Stop()
+	if(g_DataServer.DataBase != nil){
+		g_DataServer.DataBase.Close()
+	}
 }

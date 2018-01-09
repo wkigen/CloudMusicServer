@@ -4,6 +4,7 @@ import (
 	"../../utils"
 	"context"
 	"../../server"
+	"../../common"
 	"github.com/golang/glog"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -29,14 +30,14 @@ func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs
 	err := self.QueryUser(ctx,&qArgs,&qReply)
 	if(err == nil){
 		if( qReply.Id == -1){
-			password := utils.MD5([]byte(args.Password+self.Salt))
+			password := utils.MD5([]byte(args.Password+common.Salt))
 			if(accout != "" && password != ""){
 				stmt, err := self.DataBase.Prepare("INSERT INTO user VALUES (?,?,?,?)")
 				defer stmt.Close()
 				if( err == nil ){
 					res,err := stmt.Exec(0,accout,accout,password)
 					if(err == nil){
-						reply.Code = 0
+						reply.Code = iserver.ApiCodeSuccess
 						reply.Msg = "注册成功"
 						glog.Infoln("user registration success,(%s) %d",accout,res.LastInsertId)
 						return nil
@@ -51,7 +52,7 @@ func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs
 		reply.Msg = "注册失败"
 	}
 	glog.Infoln("user registration fail， error :%s",err)
-	reply.Code = 1
+	reply.Code = iserver.ApiCodeFail
     return err
 }
 
@@ -75,10 +76,10 @@ func (self *DataServer) QueryUser(ctx context.Context, args *QueryUserArgs, repl
 	err := rows.Scan(&reply.Id, &reply.Accout, &reply.NickName, &reply.Password)
 	
 	if(err == nil){
-		glog.Infoln("QueryUser %d %s %s %s",reply.Id, reply.Accout, reply.NickName, reply.Password)
-		reply.Code = 0
+		glog.Infoln("QueryUser ",reply.Id, reply.Accout, reply.NickName)
+		reply.Code = iserver.ApiCodeSuccess
 	}else{
-		reply.Code = 1
+		reply.Code = iserver.ApiCodeFail
 		if(err.Error() == "sql: no rows in result set"){
 			reply.Id = -1
 			reply.Msg = "找不到该用户"

@@ -5,6 +5,8 @@ import (
 	"github.com/golang/glog"
 	"../../server"
 	"../../dataserver/src"
+	"../../common"
+	"../../utils"
 )
 
 //--------------RegisterUser------------//
@@ -38,7 +40,7 @@ func (self *LoginServer) RegisterUser(ctx context.Context, args *RegisterUserArg
 
 type LoginArgs struct{
 	Accout string
-	Passwrod string
+	Password string
 }
 
 type LoginReply struct{
@@ -50,9 +52,6 @@ type LoginReply struct{
 }
 
 func (self *LoginServer) Login(ctx context.Context, args *LoginArgs, reply *LoginReply) error {
-	glog.Infoln("--------login--------")
-	glog.Infoln("user accout:"+args.Accout)
-	glog.Infoln("user password:"+args.Passwrod)
 
 	qArgs := &dataserver.QueryUserArgs{}
 	qReply := &dataserver.QueryUserReply{}
@@ -63,13 +62,23 @@ func (self *LoginServer) Login(ctx context.Context, args *LoginArgs, reply *Logi
 
 	if(err == nil){
 		if(qReply.Id != -1){
-			reply.Code = 0
-			reply.Id = qReply.Id
-			reply.Accout = qReply.Accout
-			reply.NickName = qReply.NickName
-			reply.Token = "100"
+			psw := utils.MD5([]byte(args.Password+common.Salt)) 
+			if(psw == qReply.Password){
+				glog.Infoln("--------login--------")
+				glog.Infoln("user accout:"+args.Accout)
+				glog.Infoln("user password:"+args.Password)
+
+				reply.Code = iserver.ApiCodeSuccess
+				reply.Id = qReply.Id
+				reply.Accout = qReply.Accout
+				reply.NickName = qReply.NickName
+				reply.Token = "100"
+			}else{
+				reply.Code = iserver.ApiCodeFail
+				reply.Msg = "密码错误"
+			}
 		}else{
-			reply.Code = 1
+			reply.Code = iserver.ApiCodeFail
 			reply.Msg = qReply.Msg
 		}
 	}

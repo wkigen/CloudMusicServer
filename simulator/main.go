@@ -13,7 +13,7 @@ import (
 
 type LoginArgs struct{
 	Accout string
-	Passwrod string
+	Password string
 }
 
 type LoginReply struct{
@@ -45,7 +45,7 @@ func Register(){
 
 	data, _ := cc.Encode(args)
 	b := bytes.NewReader(data)
-	req, err := http.NewRequest("POST", "http://127.0.0.1:8701/",b )
+	req, err := http.NewRequest("POST", "http://107.174.203.47:8701/",b )
 	if err != nil {
 		log.Fatal("failed to create request: ", err)
 		return
@@ -84,13 +84,13 @@ func Login(){
 	cc := &codec.MsgpackCodec{}
 
 	args := &LoginArgs{
-		Accout: "10",
-		Passwrod:"20",
+		Accout: "woshishui001",
+		Password:"123456",
 	}
 
 	data, _ := cc.Encode(args)
 	b := bytes.NewReader(data)
-	req, err := http.NewRequest("POST", "http://127.0.0.1:8701/",b )
+	req, err := http.NewRequest("POST", "http://107.174.203.47:8701/",b )
 	if err != nil {
 		log.Fatal("failed to create request: ", err)
 		return
@@ -121,12 +121,12 @@ func Login(){
 		log.Fatal("failed to decode reply: ", err)
 	}
 
-	log.Printf("%s , %s ,%s,%s", args.Accout, args.Passwrod, reply.Token,reply.Msg)
+	log.Printf("%s , %s ,%s,%s", args.Accout, args.Password, reply.Token,reply.Msg)
 }
 
 func main() {
 	
-	//Login()
+	Login()
 
-	Register()
+	//Register()
 }
