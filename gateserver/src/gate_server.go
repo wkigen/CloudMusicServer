@@ -12,7 +12,7 @@ func Start() {
 
 	if( err == nil){
 		zkAddr := config.GetZookeeperIp()
-		gw := NewGateway(config.BasePath,config.ServerToken,config.GateServer.Ip,zkAddr,  ServerType("http1"), client.Failtry, client.RandomSelect, client.DefaultOption)
+		gw := NewGateway(config.BasePath,config.ServerToken,config.GateServer.Ip,zkAddr,  ServerType("http1"), client.Failover, client.RandomSelect, client.DefaultOption)
 		gw.Serve()
 	}
 }

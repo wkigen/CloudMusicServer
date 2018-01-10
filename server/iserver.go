@@ -46,7 +46,7 @@ func addRegistryPlugin(s *server.Server,basePath string,addr string,zkAddr []str
 func (self *IServer)ConnectDataServer() client.XClient{
 	zkAddr := self.Config.GetZookeeperIp()
 	zd := client.NewZookeeperDiscovery("/"+self.Config.BasePath, "DataServer", zkAddr, nil)
-	self.DataServerClinet = client.NewXClient("DataServer", client.Failtry, client.RandomSelect,zd, client.DefaultOption)
+	self.DataServerClinet = client.NewXClient("DataServer", client.Failover, client.RandomSelect,zd, client.DefaultOption)
 	self.DataServerClinet.Auth(self.Config.ServerToken)
 	return self.DataServerClinet
 }
