@@ -47,13 +47,13 @@ func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs
 	User.Password = password
 	User.NickName = accout
 	affected, err := self.XormEngine.Insert(User)
-	if (affected != 1 && err != nil){
+	if (affected != 1 || err != nil){
 		reply.Msg = "注册失败"
 		reply.Code = iserver.ApiCodeFail
 	}else{
 		reply.Code = iserver.ApiCodeSuccess
 	}
-	
+
     return err
 }
 
