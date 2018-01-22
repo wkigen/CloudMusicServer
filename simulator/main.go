@@ -12,7 +12,7 @@ import (
 )
 
 type LoginArgs struct{
-	Accout string
+	Account string
 	Password string
 }
 
@@ -26,7 +26,7 @@ type LoginReply struct{
 }
 
 type RegisterUserArgs struct {
-	Accout string
+	Account string
 	Password string
 }
 
@@ -39,13 +39,13 @@ func Register(){
 	cc := &codec.MsgpackCodec{}
 
 	args := &RegisterUserArgs{
-		Accout: "woshishui001",
+		Account: "woshishui004",
 		Password:"123456",
 	}
 
 	data, _ := cc.Encode(args)
 	b := bytes.NewReader(data)
-	req, err := http.NewRequest("POST", "http://107.174.203.47:8701/",b )
+	req, err := http.NewRequest("POST", "http://127.0.0.1:8701/",b )
 	if err != nil {
 		log.Fatal("failed to create request: ", err)
 		return
@@ -76,7 +76,7 @@ func Register(){
 		log.Fatal("failed to decode reply: ", err)
 	}
 
-	log.Printf("%s , %s ,%s", args.Accout, args.Password, reply.Code)
+	log.Printf("%s , %s ,%s", args.Account, args.Password, reply.Code,reply.Msg)
 }
 
 func Login(){
@@ -84,13 +84,13 @@ func Login(){
 	cc := &codec.MsgpackCodec{}
 
 	args := &LoginArgs{
-		Accout: "woshishui001",
+		Account: "woshishui001",
 		Password:"123456",
 	}
 
 	data, _ := cc.Encode(args)
 	b := bytes.NewReader(data)
-	req, err := http.NewRequest("POST", "http://107.174.203.47:8701/",b )
+	req, err := http.NewRequest("POST", "http://127.0.0.1:8701/",b )
 	if err != nil {
 		log.Fatal("failed to create request: ", err)
 		return
@@ -121,12 +121,18 @@ func Login(){
 		log.Fatal("failed to decode reply: ", err)
 	}
 
-	log.Printf("%s , %s ,%s,%s", args.Accout, args.Password, reply.Token,reply.Msg)
+	log.Printf("%s , %s ,%s,%s", args.Account, args.Password, reply.Token,reply.Msg)
 }
 
 func main() {
 	
-	Login()
+	ch := make(chan int) 
 
-	//Register()
+	for index := 0; index <= 1000; index++ {
+		log.Printf("%d",index)
+		go 	Login()
+	}
+
+	<-ch
+	// Register()
 }

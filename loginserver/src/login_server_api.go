@@ -11,7 +11,7 @@ import (
 
 //--------------RegisterUser------------//
 type RegisterUserArgs struct {
-	Accout string
+	Account string
 	Password string
 }
 
@@ -24,7 +24,7 @@ func (self *LoginServer) RegisterUser(ctx context.Context, args *RegisterUserArg
 	qArgs := &dataserver.RegisterUserArgs{}
 	qReply := &dataserver.QueryUserReply{}
 
-	qArgs.Accout = args.Accout
+	qArgs.Account = args.Account
 	qArgs.Password = args.Password
 
 	err := self.DataServerXC.Call(ctx,"RegisterUser",qArgs,qReply)
@@ -39,14 +39,14 @@ func (self *LoginServer) RegisterUser(ctx context.Context, args *RegisterUserArg
 //--------------QueryUser------------//
 
 type LoginArgs struct{
-	Accout string
+	Account string
 	Password string
 }
 
 type LoginReply struct{
 	iserver.IApiReply
-	Id			int32
-	Accout 		string
+	Id			int64
+	Account 	string
 	NickName 	string
 	Token 		string
 }
@@ -56,22 +56,22 @@ func (self *LoginServer) Login(ctx context.Context, args *LoginArgs, reply *Logi
 	qArgs := &dataserver.QueryUserArgs{}
 	qReply := &dataserver.QueryUserReply{}
 
-	qArgs.Accout = args.Accout
+	qArgs.Account = args.Account
 
 	err := self.DataServerXC.Call(ctx,"QueryUser",qArgs,qReply)
 
 	if(err == nil){
-		if(qReply.Id != -1){
+		if(qReply.Has){
 			psw := utils.MD5([]byte(args.Password+common.Salt)) 
-			if(psw == qReply.Password){
+			if(psw == qReply.UserInfo.Password){
 				glog.Infoln("--------login--------")
-				glog.Infoln("user accout:"+args.Accout)
+				glog.Infoln("user accout:"+args.Account)
 				glog.Infoln("user password:"+args.Password)
 
 				reply.Code = iserver.ApiCodeSuccess
-				reply.Id = qReply.Id
-				reply.Accout = qReply.Accout
-				reply.NickName = qReply.NickName
+				reply.Id = qReply.UserInfo.Id
+				reply.Account = qReply.UserInfo.Account
+				reply.NickName = qReply.UserInfo.NickName
 				reply.Token = "100"
 			}else{
 				reply.Code = iserver.ApiCodeFail
