@@ -3,6 +3,7 @@ package dataserver
 import (
 	"../../server"
 	"fmt"
+	"time"
 	"github.com/golang/glog"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -19,11 +20,25 @@ type DataServer struct{
 var g_Entity ServerEntity
 var g_DataServer DataServer
 
+func PingDB(){
+	for {
+		if(g_DataServer.XormEngine != nil){
+			err := g_DataServer.XormEngine.Ping()
+			if (err != nil){
+				glog.Errorln("can not ping the db",err)
+			}
+		}
+		time.Sleep(time.Minute * 10)
+	}
+}
+
 func Init() error{
 	var err error
 	databaseConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",g_Entity.Config.DataBase.Accout,g_Entity.Config.DataBase.Password,
 						g_Entity.Config.DataBase.Ip,g_Entity.Config.DataBase.Name)				
 	g_DataServer.XormEngine, err = xorm.NewEngine(g_Entity.Config.DataBase.Type,databaseConf)
+
+	go PingDB()
 	return err
 }
 
