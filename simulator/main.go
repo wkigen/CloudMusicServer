@@ -5,9 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-
+	"strconv"
 	"github.com/rpcx-ecosystem/rpcx-gateway"
-
 	"github.com/smallnest/rpcx/codec"
 )
 
@@ -35,7 +34,7 @@ type RegisterUserReply struct {
 	Msg string
 }
 
-func Register(){
+func Register(index int){
 	cc := &codec.MsgpackCodec{}
 
 	args := &RegisterUserArgs{
@@ -51,8 +50,9 @@ func Register(){
 		return
 	}
 
+	var mId = 20000+index
 	h := req.Header
-	h.Set(gateway.XMessageID, "10000")
+	h.Set(gateway.XMessageID, strconv.Itoa(mId))
 	h.Set(gateway.XMessageType, "0")
 	h.Set(gateway.XSerializeType, "3")
 	h.Set(gateway.XServicePath, "LoginServer")
@@ -79,8 +79,8 @@ func Register(){
 	log.Printf("%s , %s ,%s", args.Account, args.Password, reply.Code,reply.Msg)
 }
 
-func Login(){
-	
+func Login(index int){
+
 	cc := &codec.MsgpackCodec{}
 
 	args := &LoginArgs{
@@ -96,8 +96,9 @@ func Login(){
 		return
 	}
 
+	var mId = 10000+index
 	h := req.Header
-	h.Set(gateway.XMessageID, "10000")
+	h.Set(gateway.XMessageID,strconv.Itoa(mId))
 	h.Set(gateway.XMessageType, "0")
 	h.Set(gateway.XSerializeType, "3")
 	h.Set(gateway.XServicePath, "LoginServer")
@@ -126,11 +127,11 @@ func Login(){
 
 func main() {
 	
-
-	// for index := 0; index <= 20; index++ {
-	// 	log.Printf("%d",index)
-	// 	go 	Login()
-	// }
-
-	Register()
+	ch := make(chan int) 
+	for index := 0; index <= 2000; index++ {
+		log.Printf("%d",index)
+		go Login(index)
+		go Register(index)
+	}
+	<-ch
 }

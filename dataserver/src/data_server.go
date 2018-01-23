@@ -4,6 +4,7 @@ import (
 	"../../server"
 	"fmt"
 	"time"
+	"sync"
 	"github.com/golang/glog"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -15,6 +16,7 @@ type ServerEntity struct {
 
 type DataServer struct{
 	XormEngine *xorm.Engine
+	SyMu       sync.RWMutex
 }
 
 var g_Entity ServerEntity
