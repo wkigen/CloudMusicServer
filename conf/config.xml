@@ -13,13 +13,13 @@
     </zookeeper>
 
     <gate_server>
-        <ip>127.0.0.1:8701</ip>
+        <ip>:8701</ip>
     </gate_server>
 
     <database>
         <type>mysql</type>
         <accout>root</accout>
-        <passowrd>123456</passowrd>
+        <passowrd>mysql123456</passowrd>
         <name>cloud_music</name>
         <ip>127.0.0.1:3306</ip>
     </database>
@@ -27,11 +27,13 @@
     <servers>
         <server>
             <name>LoginServer</name>
-            <ip>127.0.0.1:8801</ip>
+            <ip>127.0.0.1</ip>
+            <port>8801</port>
         </server>
         <server>
             <name>DataServer</name>
-            <ip>127.0.0.1:8802</ip>
+            <ip>127.0.0.1</ip>
+            <port>8802</port>
         </server>
     </servers>
 

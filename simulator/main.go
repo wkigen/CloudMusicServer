@@ -126,13 +126,11 @@ func Login(){
 
 func main() {
 	
-	ch := make(chan int) 
 
-	for index := 0; index <= 1000; index++ {
-		log.Printf("%d",index)
-		go 	Login()
-	}
+	// for index := 0; index <= 20; index++ {
+	// 	log.Printf("%d",index)
+	// 	go 	Login()
+	// }
 
-	<-ch
-	// Register()
+	Register()
 }

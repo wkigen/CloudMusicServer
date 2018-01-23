@@ -20,7 +20,6 @@ type IServer struct{
 
 func (self *IServer)auth(ctx context.Context, req *protocol.Message, token string) error {
 	if token == self.Config.ServerToken {
-		glog.Infoln("Authentication Success")
 		return nil
 	}
 	glog.Infoln("Authentication Fail")
@@ -60,12 +59,13 @@ func (self *IServer) Init() error{
 func (self *IServer) Start(name string,rcvr interface{}) {
 
 	zkAddr := self.Config.GetZookeeperIp()
-	addr := self.Config.GetServerIp(name)
+	ip := self.Config.GetServerIp(name)
+	port := self.Config.GetServerPort(name)
 	s := server.NewServer()
-	addRegistryPlugin(s,self.Config.BasePath, addr,zkAddr)
+	addRegistryPlugin(s,self.Config.BasePath, ip+":"+port,zkAddr)
 	s.RegisterName(name, rcvr, "")
 	s.AuthFunc = self.auth
-	s.Serve("tcp", addr)
+	s.Serve("tcp", ":"+port)
 } 
 
 func (self *IServer) Stop() {

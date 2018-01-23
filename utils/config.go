@@ -51,6 +51,7 @@ type ServerConfig struct{
     XMLName     xml.Name `xml:"server"`
     Name        string `xml:"name"`
     Ip        string `xml:"ip"`
+    Port        string `xml:"port"`
 }
 
 func (self *Config)GetZookeeperIp() (ip []string){
@@ -69,6 +70,16 @@ func (self *Config)GetServerIp(name string) (ip string){
 		}
 	}
 	return serverIp
+}
+
+func (self *Config)GetServerPort(name string) (ip string){
+	var serverPort string
+	for _,s := range self.Servers.Server {
+		if( s.Name == name){
+			serverPort = s.Port
+		}
+	}
+	return serverPort
 }
 
 func ReadConfig() (conf Config,err  error){
