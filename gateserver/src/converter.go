@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	//RPCX 的参数
 	XVersion           = "X-RPCX-Version"
 	XMessageType       = "X-RPCX-MesssageType"
 	XHeartbeat         = "X-RPCX-Heartbeat"
@@ -22,6 +23,10 @@ const (
 	XServiceMethod     = "X-RPCX-ServiceMethod"
 	XMeta              = "X-RPCX-Meta"
 	XErrorMessage      = "X-RPCX-ErrorMessage"
+
+	//自定义参数
+	XUserId			   = "UserId"
+	XToken			   = "Token"
 )
 
 func HttpRequest2RpcxRequest(r *http.Request,authToken string) (*protocol.Message, error) {

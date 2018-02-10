@@ -6,6 +6,7 @@ import (
     "os"
     "errors"
     "github.com/golang/glog"
+    "flag"
 )
 
 type Config struct{
@@ -14,6 +15,7 @@ type Config struct{
     ServerToken     string   `xml:"server_token"`
     Zookeeper       ZookeeperConfig `xml:"zookeeper"`
     GateServer      GateServerConfig `xml:"gate_server"`
+    Redis           RedisConfig `xml:"redis"`
     DataBase        DataBaseConfig `xml:"database"`
     Servers         ServersConfig `xml:"servers"`
 }
@@ -42,6 +44,13 @@ type DataBaseConfig struct{
     Ip          string `xml:"ip"`
 }
 
+type RedisConfig struct{
+    Redis    xml.Name `xml:"redis"`
+    Ip          string `xml:"ip"`
+    Password    string `xml:"passowrd"`
+}
+
+
 type ServersConfig struct{
     XMLName     xml.Name `xml:"servers"`
     Server      []ServerConfig `xml:"server"`
@@ -52,6 +61,12 @@ type ServerConfig struct{
     Name        string `xml:"name"`
     Ip        string `xml:"ip"`
     Port        string `xml:"port"`
+}
+
+var conf_path string
+
+func init() {
+	flag.StringVar(&conf_path, "config", "conf/config.xml", "conf path")
 }
 
 func (self *Config)GetZookeeperIp() (ip []string){
@@ -86,7 +101,7 @@ func ReadConfig() (conf Config,err  error){
 
     config := Config{}
 
-    file, err := os.Open("conf/config.xml")    
+    file, err := os.Open(conf_path)    
     if err != nil {
         glog.Fatal("can not read the config ,%s",err)
         return config, errors.New("can not read the config")

@@ -1,7 +1,6 @@
 package gateserver
 
 import (
-	"fmt"
 	"context"
 	"net"
 	"net/http"
@@ -100,15 +99,6 @@ func (g *Gateway) startH2c(handler http.Handler) {
 	}
 }
 
-func (g *Gateway) Interceptor(servicePath string) (error){
-
-	if(servicePath == "DataServer"){
-		return fmt.Errorf("can non connect to the service ,%s",servicePath)
-	}
-
-	return nil
-}
-
 func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	if r.Header.Get(XServicePath) == "" {
 		servicePath := params.ByName("servicePath")
@@ -123,12 +113,12 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 
 	wh := w.Header()
 
-	err := g.Interceptor(servicePath)
+	errData,err := Interceptor(r)
 	if(err != nil){
 		glog.Warningln(err)
 		wh.Set(XMessageStatusType, "Error")
 		wh.Set(XErrorMessage, err.Error())
-		w.Write([] byte("error"))
+		w.Write(errData)
 		return
 	}
 
@@ -160,6 +150,7 @@ func (g *Gateway) handleRequest(w http.ResponseWriter, r *http.Request, params h
 	for k, v := range m {
 		wh.Set(k, v)
 	}
+	
 	if err != nil {
 		wh.Set(XMessageStatusType, "Error")
 		wh.Set(XErrorMessage, err.Error())

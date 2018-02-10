@@ -19,10 +19,15 @@
     <database>
         <type>mysql</type>
         <accout>root</accout>
-        <passowrd>mysql123456</passowrd>
+        <passowrd>mysql123</passowrd>
         <name>cloud_music</name>
         <ip>127.0.0.1:3306</ip>
     </database>
+
+    <redis>
+        <ip>127.0.0.1:6379</ip>
+        <passowrd>myredis123</passowrd>
+    </redis>
 
     <servers>
         <server>

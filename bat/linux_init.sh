@@ -16,7 +16,3 @@ fi
 if [ ! -d "./log/gate_server" ]; then
   mkdir ./log/gate_server
 fi
-
-./data_server -log_dir="./log/data_server/" -alsologtostderr=true &
-./login_server -log_dir="./log/login_server/" -alsologtostderr=true &
-./gate_server -log_dir="./log/gate_server/" -alsologtostderr=true &

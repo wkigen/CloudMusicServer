@@ -49,9 +49,7 @@ func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs
 	User.Password = password
 	User.NickName = accout
 
-	self.SyMu.Lock()
 	affected, err := self.XormEngine.Insert(User)
-	self.SyMu.Unlock()
 
 	if (affected != 1 || err != nil){
 		reply.Msg = "注册失败"
@@ -83,9 +81,7 @@ func (self *DataServer) QueryUser(ctx context.Context, args *QueryUserArgs, repl
 		return errors.New("params is error "+args.Account)
 	}
 
-	self.SyMu.Lock()
 	has, err := self.XormEngine.Where("account=?", args.Account).Get(&reply.UserInfo)
-	self.SyMu.Unlock()
 	
 	if (has){
 		reply.Code = iserver.ApiCodeSuccess

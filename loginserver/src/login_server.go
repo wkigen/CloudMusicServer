@@ -3,34 +3,28 @@ package loginserver
 
 import (
 	"../../server"
-	"github.com/smallnest/rpcx/client"
 	"github.com/golang/glog"
 )
 
-type ServerEntity struct {
-	iserver.IServer
-}
-
 type LoginServer struct{
-	DataServerXC client.XClient
+	Base 			iserver.IServer
 }
 
-var g_Entity ServerEntity
+var g_LoginServer LoginServer
 
 func Start(){
 	glog.Infoln("LoginServer is start")
-	loginServer := LoginServer{}
-	g_Entity = ServerEntity{}
-	err := g_Entity.Init()
+	g_LoginServer= LoginServer{}
+	err := g_LoginServer.Base.Init()
 	if(err != nil){
 		glog.Fatal("%s",err)
 		return
 	}
-	loginServer.DataServerXC = g_Entity.ConnectDataServer()
-	g_Entity.Start("LoginServer",&loginServer)
-	
+	g_LoginServer.Base.ConnectDataServer()
+	g_LoginServer.Base.ConnectRedis()
+	g_LoginServer.Base.Start("LoginServer",&g_LoginServer)
 }
 
 func  Stop()  {
-	g_Entity.Stop()
+	g_LoginServer.Base.Stop()
 }

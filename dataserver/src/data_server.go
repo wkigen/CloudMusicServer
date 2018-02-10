@@ -10,16 +10,12 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-type ServerEntity struct {
-	iserver.IServer
-}
-
 type DataServer struct{
-	XormEngine *xorm.Engine
-	SyMu       sync.RWMutex
+	Base 		iserver.IServer
+	XormEngine 	*xorm.Engine
+	SyMu       	sync.RWMutex
 }
 
-var g_Entity ServerEntity
 var g_DataServer DataServer
 
 func PingDB(){
@@ -36,9 +32,11 @@ func PingDB(){
 
 func Init() error{
 	var err error
-	databaseConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",g_Entity.Config.DataBase.Accout,g_Entity.Config.DataBase.Password,
-						g_Entity.Config.DataBase.Ip,g_Entity.Config.DataBase.Name)				
-	g_DataServer.XormEngine, err = xorm.NewEngine(g_Entity.Config.DataBase.Type,databaseConf)
+	databaseConf := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",g_DataServer.Base.Config.DataBase.Accout,
+						g_DataServer.Base.Config.DataBase.Password,
+						g_DataServer.Base.Config.DataBase.Ip,
+						g_DataServer.Base.Config.DataBase.Name)				
+	g_DataServer.XormEngine, err = xorm.NewEngine(g_DataServer.Base.Config.DataBase.Type,databaseConf)
 
 	go PingDB()
 	return err
@@ -46,9 +44,8 @@ func Init() error{
 
 func Start(){
 	g_DataServer = DataServer{}
-	g_Entity = ServerEntity{}
 
-	err := g_Entity.Init()
+	err := g_DataServer.Base.Init()
 	if(err != nil){
 		glog.Fatal(err)
 		return
@@ -60,11 +57,11 @@ func Start(){
 		return
 	}
 
-	g_Entity.Start("DataServer",&g_DataServer)
+	g_DataServer.Base.Start("DataServer",&g_DataServer)
 }
 
 func Stop(){
-	g_Entity.Stop()
+	g_DataServer.Base.Stop()
 	if(g_DataServer.XormEngine != nil){
 		g_DataServer.XormEngine.Close()
 	}
