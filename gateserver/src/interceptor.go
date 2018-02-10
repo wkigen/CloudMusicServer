@@ -8,13 +8,7 @@ import (
 	"github.com/golang/glog"
 )
 
-type GateInterceptorReply struct{
-	iserver.IApiReply
-}
-
-
-
-func CheckToken(userId string,token string) bool{
+func CheckToken(serverPath string,serviceMethod string,userId string,token string) bool{
 	glog.Infoln("CheckToken",userId,token)
 	return true
 }
@@ -22,13 +16,16 @@ func CheckToken(userId string,token string) bool{
 
 func Interceptor(r *http.Request) ([]byte,error){
 	cc := &codec.MsgpackCodec{}
-	args := GateInterceptorReply{}
 	var err error
 
 	for {
-		
+		serverPath := r.Header.Get(XServicePath) 
+		serviceMethod := r.Header.Get(XServiceMethod)
+		userId := r.Header.Get(XUserId)
+		token := r.Header.Get(XToken)
+
 		//不能接连数据库服务器
-		if(r.Header.Get(XServicePath) == "DataServer"){
+		if(serverPath == "DataServer"){
 			args.Msg = "非法操作"
 			args.Code = iserver.ApiCodeIllegalConnentServer
 			err = errors.New("can non connect to the service DataServer")
@@ -36,8 +33,9 @@ func Interceptor(r *http.Request) ([]byte,error){
 		}
 
 		//检查Token
-		if(!CheckToken(r.Header.Get(XUserId) ,r.Header.Get(XToken))){
-
+			args.Msg = "token失效"
+			args.Code = iserver.ApiCodeLoginInvalid
+			err = errors.New("token is invalid")
 			break
 		}
 

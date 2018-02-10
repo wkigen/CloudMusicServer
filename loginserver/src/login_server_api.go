@@ -102,21 +102,21 @@ type ChangNickNameReply struct{
 
 func (self *LoginServer) ChangNickName(ctx context.Context, args *ChangNickNameArgs, reply *ChangNickNameReply) error {
 
-	qArgs := &dataserver.QueryUserArgs{}
-	qReply := &dataserver.QueryUserReply{}
+	// qArgs := &dataserver.QueryUserArgs{}
+	// qReply := &dataserver.QueryUserReply{}
 
-	qArgs.Account = args.Account
+	// qArgs.Account = args.Account
 
-	err := self.Base.DataServerXC.Call(ctx,"QueryUser",qArgs,qReply)
-	if(err == nil){
-		if(qReply.Has){
+	// err := self.Base.DataServerXC.Call(ctx,"QueryUser",qArgs,qReply)
+	// if(err == nil){
+	// 	if(qReply.Has){
 
-		}
-		else{
-			reply.Code = iserver.ApiCodeFail
-			reply.Msg = "未找到该账号"
-		}
-	}
+	// 	}
+	// 	else{
+	// 		reply.Code = iserver.ApiCodeFail
+	// 		reply.Msg = "未找到该账号"
+	// 	}
+	// }
 
 	return nil
 }

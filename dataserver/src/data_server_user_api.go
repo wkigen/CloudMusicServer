@@ -5,7 +5,6 @@ import (
 	"../../utils"
 	"../../server"
 	"../../common"
-	"errors"
 	"github.com/golang/glog"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -26,10 +25,6 @@ type RegisterUserReply struct {
 
 func (self *DataServer) RegisterUser(ctx context.Context, args *RegisterUserArgs, reply *RegisterUserReply) error {
 	glog.Infoln("RegisterUser user account=",args.Account)
-
-	if (args.Account == "" || args.Password == ""){
-		return errors.New("params is error "+args.Account+args.Password)
-	}
 
 	self.SyMu.Lock()
 	has, err := self.XormEngine.Where("account=?", args.Account).Get(&reply.UserInfo)
@@ -76,10 +71,6 @@ type QueryUserReply struct {
 
 func (self *DataServer) QueryUser(ctx context.Context, args *QueryUserArgs, reply *QueryUserReply) error {
 	glog.Infoln("query user account=",args.Account)
-
-	if (args.Account == ""){
-		return errors.New("params is error "+args.Account)
-	}
 
 	has, err := self.XormEngine.Where("account=?", args.Account).Get(&reply.UserInfo)
 	
