@@ -16,6 +16,7 @@ func CheckToken(serverPath string,serviceMethod string,userId string,token strin
 
 func Interceptor(r *http.Request) ([]byte,error){
 	cc := &codec.MsgpackCodec{}
+	args := iserver.IApiReply{}
 	var err error
 
 	for {
@@ -33,6 +34,7 @@ func Interceptor(r *http.Request) ([]byte,error){
 		}
 
 		//检查Token
+		if(!CheckToken(serverPath,serviceMethod,userId,token)){
 			args.Msg = "token失效"
 			args.Code = iserver.ApiCodeLoginInvalid
 			err = errors.New("token is invalid")
